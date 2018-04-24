@@ -12,9 +12,8 @@ ENV PROJECT_PATH=/var/www \
     APACHE_PID_FILE=/var/run/apache2/apache2.pid \
     PHP_MODS_CONF=/etc/php/5.6/mods-available \
     PHP_INI=/etc/php/5.6/apache2/php.ini \
-    ESPO_VERSION=5.0.2 \
-    TERM=xterm
-
+    ESPO_VERSION=4.8.4 \
+    TERM=xterm 
 # Use PHP5.6 instead of PHP5.5 (need to manually add repo key)
 RUN apt-get update -q && apt-get upgrade -yqq && \
     apt-get install -yqq software-properties-common && \
@@ -68,7 +67,7 @@ RUN echo "ServerName localhost" | sudo tee /etc/apache2/conf-available/fqdn.conf
     a2enconf fqdn
 
 # Set the timezone.
-RUN sudo echo "Europe/Paris" > /etc/timezone && \
+RUN sudo echo "America/Sao_Paulo" > /etc/timezone && \
     sudo dpkg-reconfigure -f noninteractive tzdata
 
 # Add our crontab file
@@ -99,8 +98,9 @@ RUN find . -type d -exec chmod 755 {} + && find . -type f -exec chmod 644 {} +;
 RUN find data custom -type d -exec chmod 775 {} + && find data custom -type f -exec chmod 664 {} +;
 RUN chmod 777 cron.php
 
+
 # Cleanup
-RUN apt-get purge -yq \
+RUN sudo apt-get purge -yq \
       wget \
       patch \
       software-properties-common && \
@@ -112,4 +112,4 @@ EXPOSE 80
 RUN crontab /root/crons.conf
 
 # Remove pre-existent apache pid and start apache
-CMD rm -f $APACHE_PID_FILE && cron && /usr/sbin/apache2ctl -D FOREGROUND
+CMD sudo rm -f $APACHE_PID_FILE && cron && /usr/sbin/apache2ctl -D FOREGROUND
